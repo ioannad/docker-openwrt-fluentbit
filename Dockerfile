@@ -1,23 +1,33 @@
 FROM mcreations/openwrt-x64:latest 
 
 LABEL maintainer="Ioanna M. Dimitriou <dimitriou@m-creations.com>"
-LABEL version="0.12.11"
 LABEL description="Fluent-bit docker image on top of openWRT"
 LABEL vendor="mcreations"
 
-ENV FLUENTBIT_MAJOR_VERSION="0.12"
-ENV FLUENTBIT_MINOR_VERSION="0.12.11"
-ENV FLUENTBIT_USER="fluentbit"
+ENV FLUENTBIT_USER="fluent-bit"
 ENV FLUENTBIT_GROUP="${FLUENTBIT_USER}"
-ENV FLUENTBIT_HOME="/opt/${FLUENTBIT_USER}"
-ENV FLUENTBIT_CONFIG_DIR="/opt/fluent-bit/config"
+ENV FLUENTBIT_NAME="fluent-bit"
+ENV FLUENTBIT_HOME="/opt/${FLUENTBIT_NAME}"
+ENV FLUENTBIT_CONFIG_DIR="${FLUENTBIT_HOME}/config"
+
+
+ENV ES_LOCATION="localhost"
+ENV ES_PORT="9200"
+ENV INDEX_NAME="fluentbit"
+ENV INDEX_TYPE="string"
 
 VOLUME /data
 
 ADD mnt/ /mnt
 
-RUN sh /mnt/install-fluentbit.sh
+RUN echo "${FLUENTBIT_USER}:*:100:100::${FLUENTBIT_HOME}:/bin/bash" >> /etc/passwd && \
+    mkdir -p "${FLUENTBIT_HOME}" && \
+    chown "${FLUENTBIT_USER}" "${FLUENTBIT_HOME}"
 
 EXPOSE 24224 5140
+
+COPY src/fluent-bit/build/bin/fluent-bit ${FLUENTBIT_HOME}
+
+USER ${FLUENTBIT_USER}
 
 CMD ["/mnt/start-fluentbit.sh"] 
