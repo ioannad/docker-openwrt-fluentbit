@@ -18,16 +18,19 @@ ENV INDEX_TYPE="string"
 
 VOLUME /data
 
-ADD mnt/ /mnt
+COPY mnt ${FLUENTBIT_HOME}
 
 RUN echo "${FLUENTBIT_USER}:*:100:100::${FLUENTBIT_HOME}:/bin/bash" >> /etc/passwd && \
-    mkdir -p "${FLUENTBIT_HOME}" && \
+    mkdir -p "${FLUENTBIT_HOME}/conf" && \
     chown "${FLUENTBIT_USER}" "${FLUENTBIT_HOME}"
 
 EXPOSE 24224 5140
 
 COPY src/fluent-bit/build/bin/fluent-bit ${FLUENTBIT_HOME}
+COPY src/fluent-bit/conf ${FLUENTBIT_HOME}/conf
+
+RUN chmod +x "${FLUENTBIT_HOME}/start-fluentbit.sh"
 
 USER ${FLUENTBIT_USER}
 
-CMD ["/mnt/start-fluentbit.sh"] 
+CMD ["${FLUENTBIT_HOME}/start-fluentbit.sh"] 
