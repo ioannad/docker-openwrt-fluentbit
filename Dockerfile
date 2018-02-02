@@ -10,14 +10,8 @@ ENV FLUENTBIT_NAME="fluent-bit"
 ENV FLUENTBIT_HOME="/opt/${FLUENTBIT_NAME}"
 ENV FLUENTBIT_CONFIG_DIR="${FLUENTBIT_HOME}/conf"
 
-ENV ES_LOCATION="localhost"
-ENV ES_PORT="9200"
-ENV INDEX_NAME="fluentbit"
-ENV INDEX_TYPE="string"
-
 VOLUME /data
 
-COPY mnt ${FLUENTBIT_HOME}
 COPY start/start-fluentbit.sh /start-fluentbit.sh
 
 RUN echo "${FLUENTBIT_USER}:*:100:100::${FLUENTBIT_HOME}:/bin/bash" >> /etc/passwd && \
