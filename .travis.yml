@@ -1,0 +1,12 @@
+sudo: required
+
+services:
+  - docker
+
+install:
+  - make
+
+script:
+  - sh tests/test-fluentbit-built-in-check.sh 
+  - sh tests/test-fluentbit-with-external-config.sh
+
